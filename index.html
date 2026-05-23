@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Human AI Experiment — $1M Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f8f7f4;
+      --surface: #ffffff;
+      --surface2: #f1efe8;
+      --border: rgba(0,0,0,0.08);
+      --text-primary: #2c2c2a;
+      --text-secondary: #888780;
+      --green: #1D9E75;
+      --green-dark: #0F6E56;
+      --green-light: #E1F5EE;
+      --green-mid: #9FE1CB;
+      --gray-mid: #D3D1C7;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 0.4rem;
+    }
+
+    .site-title {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 2.5rem;
+    }
+
+    .main-card {
+      background: var(--surface);
+      border-radius: 16px;
+      border: 0.5px solid var(--border);
+      padding: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .goal-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .big-number {
+      font-size: 64px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1;
+      margin-bottom: 0.2rem;
+      letter-spacing: -2px;
+      transition: all 0.6s ease;
+    }
+
+    .of-goal {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 40px;
+      background: var(--surface2);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 0.75rem;
+      border: 0.5px solid var(--border);
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green-dark) 0%, var(--green) 60%, var(--green-mid) 100%);
+      border-radius: 8px;
+      transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      min-width: 0px;
+      position: relative;
+    }
+
+    .progress-pct {
+      font-size: 13px;
+      font-weight: 500;
+      color: #fff;
+      padding-right: 14px;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .progress-pct.visible {
+      opacity: 1;
+    }
+
+    .progress-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+
+    .progress-stats span {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .progress-stats .remaining {
+      color: var(--text-secondary);
+    }
+
+    .milestone {
+      font-size: 15px;
+      color: var(--green-dark);
+      padding: 1rem 1.25rem;
+      border-left: 2px solid var(--green);
+      background: var(--green-light);
+      border-radius: 0 10px 10px 0;
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 0.5px solid var(--border);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    .status-text {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .status-text strong {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .loading-state {
+      text-align: center;
+      padding: 3rem 0;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .error-state {
+      text-align: center;
+      padding: 2rem;
+      color: #993C1D;
+      font-size: 13px;
+      background: #FAECE7;
+      border-radius: 10px;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 1.5rem;
+    }
+
+    .footer a {
+      color: var(--green);
+      text-decoration: none;
+    }
+
+    @media (max-width: 480px) {
+      .big-number { font-size: 44px; letter-spacing: -1px; }
+      .main-card { padding: 1.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <p class="eyebrow">thehumanaiexp.com</p>
+    <p class="site-title">The Human AI Experiment</p>
+
+    <div class="main-card">
+      <div id="loading" class="loading-state">Fetching live numbers...</div>
+      <div id="tracker" style="display:none;">
+        <p class="goal-label">Total income toward $1,000,000</p>
+        <p class="big-number" id="totalIncome">$0</p>
+        <p class="of-goal">of $1,000,000 goal</p>
+
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill" style="width:0%">
+            <span class="progress-pct" id="progressPct"></span>
+          </div>
+        </div>
+
+        <div class="progress-stats">
+          <span id="pctLabel">0% there</span>
+          <span class="remaining" id="remaining">$1,000,000 remaining</span>
+        </div>
+
+        <p class="milestone" id="milestoneMsg"></p>
+
+        <div class="status-row">
+          <div class="status-dot"></div>
+          <p class="status-text">Live — last updated <strong id="lastUpdated">just now</strong></p>
+        </div>
+      </div>
+      <div id="error" class="error-state" style="display:none;">
+        Unable to load live data. Please check back soon.
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>The Human AI Experiment &mdash; <a href="https://thehumanaiexp.com" target="_blank">thehumanaiexp.com</a></p>
+    </div>
+
+  </div>
+
+  <script>
+    const GOAL = 1000000;
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQtAkxg8uUU3yDS0KN4pru_pBS-9JvYs4kazHelzavIa9bB7qpYptCUchMgwPjP575JUT705XAnbt5p/pub?gid=0&single=true&output=csv';
+
+    const fmt = v => '$' + Math.round(v).toLocaleString();
+
+    const milestoneMsg = pct => {
+      if (pct === 0) return 'Just getting started. The bar fills from here.';
+      if (pct < 5)   return 'Every dollar logged is proof the experiment is working.';
+      if (pct < 10)  return 'The first few percent are always the hardest. Keep going.';
+      if (pct < 25)  return 'Early momentum building. This is where the story starts.';
+      if (pct < 50)  return 'Approaching the halfway mark. This is where most people stop — you didn\'t.';
+      if (pct < 75)  return 'Past halfway. The $1M is no longer a question of if.';
+      if (pct < 90)  return 'The final stretch. This is the chapter your audience will remember.';
+      if (pct < 100) return 'Almost there. One more push.';
+      return 'You did it. $1,000,000. The experiment is complete.';
+    };
+
+    async function loadData() {
+      try {
+        const res = await fetch(SHEET_URL);
+        if (!res.ok) throw new Error('fetch failed');
+        const text = await res.text();
+
+        const rows = text.trim().split('\n');
+        const values = rows[1] ? rows[1].split(',') : rows[0].split(',');
+        const raw = values[1] !== undefined ? values[1] : values[0];
+        const income = parseFloat(String(raw).replace(/[^0-9.]/g, '')) || 0;
+
+        render(income);
+      } catch (e) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error').style.display = 'block';
+      }
+    }
+
+    function render(income) {
+      const pct = Math.min(100, (income / GOAL) * 100);
+      const remaining = Math.max(0, GOAL - income);
+
+      document.getElementById('totalIncome').textContent = fmt(income);
+      document.getElementById('remaining').textContent = fmt(remaining) + ' remaining';
+      document.getElementById('pctLabel').textContent = pct.toFixed(2) + '% there';
+      document.getElementById('milestoneMsg').textContent = milestoneMsg(pct);
+
+      const now = new Date();
+      document.getElementById('lastUpdated').textContent =
+        now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('tracker').style.display = 'block';
+
+      setTimeout(() => {
+        document.getElementById('progressFill').style.width = pct.toFixed(4) + '%';
+        const pctEl = document.getElementById('progressPct');
+        if (pct >= 3) {
+          pctEl.textContent = pct.toFixed(1) + '%';
+          pctEl.classList.add('visible');
+        }
+      }, 200);
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
